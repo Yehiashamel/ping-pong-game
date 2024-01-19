@@ -1,0 +1,91 @@
+<!-- by lucas monteiro -->
+<!-- @ 2020 -->
+<style type="text/css">
+	body, html {
+		flex-direction: column;
+		display: flex;
+		justify-content: center;
+		background: black;
+		align-items: center;
+		font-size: 14px;
+		font-family: 'Helvetica';
+		color: white;
+	}
+
+	#pong {	border: 10px solid white; margin: 1rem;}
+
+	#score {
+		font-weight: bold;
+		font-size: 40px;
+		margin-top: -1rem;
+	}
+</style>
+<span id="score">0 | 0</span>
+<canvas id="pong"></canvas>
+<span>Player 1: W/S | Player 2: Arrows Up/Down</span>
+<script type="text/javascript">
+	score = document.getElementById('score')
+	canv = document.getElementById('pong')
+	cW = canv.width = 800
+	cH = canv.height = 400
+	ctx = canv.getContext('2d')
+
+	score1 = score2 = 0
+	p1y = p2y = cH / 2
+	pW = 10
+	pH = 60
+	bx = cW / 2
+	by = cH / 2
+	bv = 5
+	pv = 5
+	pKey = 0
+	vbx = Math.random() > 0.5 ? bv : bv * -1
+	vby = Math.random() > 0.5 ? bv : bv * -1
+
+	window.addEventListener('keydown', e => pKey = e.keyCode)
+	window.addEventListener('keyup', e => pKey = 0)
+
+	setInterval(() => {
+		if (pKey == 87 && p1y >= 0)
+			p1y -= pv
+		if (pKey == 83 && p1y + pH <= cH)
+			p1y += pv
+		if (pKey == 38 && p2y >= 0)
+			p2y -= pv
+		if (pKey == 40 && p2y + pH <= cH)
+			p2y += pv
+
+		if (bx >= cW){
+			score1++
+			bx = cW / 2
+			by = cH / 2
+			vbx *= -1
+		} else if (bx <= 0){
+			score2++
+			bx = cW / 2
+			by = cH / 2
+			vbx *= -1
+		} else if (by > cH || by < 0)
+			vby *= -1
+		else if (bx == 40 && (by >= p1y && by <= p1y + pH))
+			vbx *= -1
+		else if (bx == cW - 40 && (by >= p2y && by <= p2y + pH))
+			vbx *= -1
+
+		bx += vbx
+		by += vby
+
+		score.innerHTML = `${score1} | ${score2}`
+		ctx.fillStyle = 'black'
+		ctx.fillRect(0, 0, cW, cH)
+
+		ctx.fillStyle = 'white'
+		ctx.fillRect(20, p1y, pW, pH)
+		ctx.fillRect(cW - 40, p2y, pW, pH)
+		ctx.fillRect(cW / 2, 30, 1, cH - 60)
+
+		ctx.beginPath()
+		ctx.arc(bx, by, 10, 0, Math.PI * 2)
+		ctx.fill()
+	}, 1000 / 60)
+</script>
